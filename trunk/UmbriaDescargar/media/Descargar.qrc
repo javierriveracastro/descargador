@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="Umbria">
+    <file>alyan_logo.png</file>
+  </qresource>
+</RCC>
