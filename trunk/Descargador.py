@@ -74,6 +74,7 @@ class Principal(QtGui.QMainWindow, object):
             self, "Guardar partida", os.path.expanduser("~"),
             "Archivo Tex (*.tex)")
         # LLamar a proceso de generacion de verdad
+        genera_tex(nombre_archivo, self.partida)
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)

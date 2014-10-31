@@ -169,11 +169,13 @@ class Partida(object):
                     resultados.append(actual)
                     actual = ""
                 else:
-                    actual += str(tag)
+                    actual += unicode(tag)
             except AttributeError:
                 pass  # Probablemente blancos
         resultados.append(actual)
-        self.introduccion, self.sinopsis, self.notas = resultados
+        self.introduccion = BeautifulSoup(resultados[0])
+        self.sinopsis = BeautifulSoup(resultados[1])
+        self.notas = BeautifulSoup(resultados[2])
         self.url_portada = sopa.find("img", "portadaPartida")['src']
         progreso.setValue(5)
 
