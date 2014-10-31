@@ -5,76 +5,87 @@ Pasa unha partida de Umbria a un ficheiro .tex
 
 import codecs
 
-# TODO: Pedir un directorio en vez de un ficheiro
-# TODO: Descargas as imaxes o directorio
-# TODO: Incluir as imaxes no .text
+from Umbria import descarga_imagen
 
 
-def html2latex(el):
+class GeneradorText(object):
     """
-    Intenta convertir un documento en HTML a LaTex
-
-    @param el: Arbol BeatifulSoup a convertir
+    Clase que xenera un tex de unha partida
     """
-    try:
-        contenidos = el.contents
-    except AttributeError:
-        # Estamos al final del arbol
-        return unicode(el)
-    else:
-        resul = u''
-        # Diversos tags tienen que hacer diversas cosas
-        if el.name == u'em':
-            resul += "\\emph{"
-        elif el.name == u'strong':
-            resul += "\\textbf{"
-        elif el.name == u'u':
-            resul += '\\underline{'
-        elif el.name == u'strike':
-            resul += '\\sout{'
-        for elemento in contenidos:
-            resul += html2latex(elemento)
-        if el.name in (u'em', u'strong', u'u', u'strike'):
-            resul += "}"
-        if el.name in (u'div', u'p'):
-            resul += "\n\n"
-        return resul
 
+    def __init__(self, nombre_dir, partida):
+        """
+        Genera el fichero .text
 
-def genera_escena(escena):
-    """
-    Genera una escena como docmento de text
+        @param nombre_dir: Nombre del archivo
+        @param partida: Partida descargada
+        """
+        self.imagenes = {}
+        self.directorio = nombre_dir
+        fichero = codecs.open(nombre_dir + "/partida.tex", "w", "utf-8")
+        fichero.write('\\documentclass[a4paper,11pt]{book}\n'
+                      "\\usepackage[spanish]{babel}\n"
+                      "\\usepackage[utf8x]{inputenc}\n"
+                      "\\usepackage{ulem}\n"
+                      "\\usepackage{graphicx}\n"
+                      "\\author{Comunidad Umbria}\n"
+                      "\\title{%s}\n\n"
+                      "\\begin{document}\n"
+                      "\\maketitle\n" % partida.titulo)
+        fichero.write("\\frontmatter\n")
+        fichero.write(u"\\chapter{Introduccion}\n%s\n" % self.html2latex(
+            partida.introduccion))
+        fichero.write(u"\\chapter{Sinopsis}\n%s\n" % self.html2latex(
+            partida.sinopsis))
+        fichero.write(u"\\chapter{Notas}\n%s\n" % self.html2latex(
+            partida.notas))
+        fichero.write("\\mainmatter\n")
+        for escena in partida.escenas:
+            fichero.write(self.genera_escena(escena))
+        fichero.write("\\end{document}\n")
+        fichero.close()
 
-    @param escena: escena de Umbria que queremos generar
-    """
-    tex = "\\chapter{{%s}}\n" % escena.titulo
-    tex += "%s\n" % html2latex(escena.descripcion)
-    return tex
+    def html2latex(self, el):
+        """
+        Intenta convertir un documento en HTML a LaTex
 
+        @param el: Arbol BeatifulSoup a convertir
+        """
+        try:
+            contenidos = el.contents
+        except AttributeError:
+            # Estamos al final del arbol
+            return unicode(el)
+        else:
+            resul = u''
+            # Diversos tags tienen que hacer diversas cosas
+            if el.name == u'em':
+                resul += "\\emph{"
+            elif el.name == u'strong':
+                resul += "\\textbf{"
+            elif el.name == u'u':
+                resul += '\\underline{'
+            elif el.name == u'strike':
+                resul += '\\sout{'
+            elif el.name == u'img':
+                nombre_imagen = self.imagenes.get(el['src'], descarga_imagen(
+                    el['src'], self.directorio))
+                resul += '\\includegraphics[width=\\textwidth]{%s}\n\n' % \
+                    nombre_imagen
+            for elemento in contenidos:
+                resul += self.html2latex(elemento)
+            if el.name in (u'em', u'strong', u'u', u'strike'):
+                resul += "}"
+            if el.name in (u'div', u'p'):
+                resul += "\n\n"
+            return resul
 
-def genera_tex(nombre_archivo, partida):
-    """
-    Genera el fichero .text
+    def genera_escena(self, escena):
+        """
+        Genera una escena como docmento de text
 
-    @param nombre_archivo: Nombre del archivo
-    @param partida: Partida descargada
-    """
-    fichero = codecs.open(nombre_archivo, "w", "utf-8")
-    fichero.write('\\documentclass[a4paper,11pt]{book}\n'
-                  "\\usepackage[spanish]{babel}\n"
-                  "\\usepackage[utf8x]{inputenc}\n"
-                  "\\usepackage{ulem}\n"
-                  "\\author{Comunidad Umbria}\n"
-                  "\\title{%s}\n\n"
-                  "\\begin{document}\n"
-                  "\\maketitle\n" % partida.titulo)
-    fichero.write("\\frontmatter\n")
-    fichero.write(u"\\chapter{Introduccion}\n%s\n" % html2latex(
-        partida.introduccion))
-    fichero.write(u"\\chapter{Sinopsis}\n%s\n" % html2latex(partida.sinopsis))
-    fichero.write(u"\\chapter{Notas}\n%s\n" % html2latex(partida.notas))
-    fichero.write("\\mainmatter\n")
-    for escena in partida.escenas:
-        fichero.write(genera_escena(escena))
-    fichero.write("\\end{document}\n")
-    fichero.close()
+        @param escena: escena de Umbria que queremos generar
+        """
+        tex = "\\chapter{{%s}}\n" % escena.titulo
+        tex += "%s\n" % self.html2latex(escena.descripcion)
+        return tex

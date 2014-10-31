@@ -8,13 +8,12 @@ http://www.comunidadumbria.com
 """
 
 import sys
-import os
 
 from PyQt4 import QtGui, QtCore
 
 from UmbriaDescargar.DescargarUi import Ui_MainWindow
 from UmbriaDescargar.Umbria import Partida, PartidaPruebas
-from UmbriaDescargar.UmbriaTex import genera_tex
+from UmbriaDescargar.UmbriaTex import GeneradorText
 
 # TODO: Icono del programa
 # TODO: Control de errores de conexión
@@ -70,11 +69,10 @@ class Principal(QtGui.QMainWindow, object):
         print(self.partida.escenas_seleccionadas)
         # Pedir una ruta donde guardar la partida
         # noinspection PyCallByClass,PyTypeChecker
-        nombre_archivo = QtGui.QFileDialog.getSaveFileName(
-            self, "Guardar partida", os.path.expanduser("~"),
-            "Archivo Tex (*.tex)")
+        nome_dir = QtGui.QFileDialog.getExistingDirectory(
+            self, "Guardar partida", "~", QtGui.QFileDialog.ShowDirsOnly)
         # LLamar a proceso de generacion de verdad
-        genera_tex(nombre_archivo, self.partida)
+        GeneradorText(nome_dir, self.partida)
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)

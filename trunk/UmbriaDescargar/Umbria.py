@@ -7,7 +7,7 @@ import urllib2
 import urllib
 import socket
 import datetime
-import tempfile
+import uuid
 import random
 from bs4 import BeautifulSoup
 from PyQt4 import QtGui
@@ -42,19 +42,23 @@ def logea(usuario, contrasena):
     return opener
 
 
-def descarga_imagen(url_imageg):
+def descarga_imagen(url_image, directorio):
     """
     Descarga una imagen de Umbria, no realiza autentificación
 
-    @param url_imageg: cadena con la url de la imagen
+    @param url_image: cadena con la url de la imagen
+    @param directorio: Directorio para descargar la imagen
     @return: Objeto fichero con la imagen
     """
-    conexion = urllib.urlopen(url_imageg)
-    temporal = tempfile.NamedTemporaryFile(delete=False)
-    temporal.write(conexion.read())
-    nombre_fichero = temporal.name
+    try:
+        conexion = urllib.urlopen(url_image)
+    except (IOError, AttributeError):
+        return ""
+    nombre_fichero = str(uuid.uuid4()) + url_image[-4:]
+    ficheiro = open(directorio + "/" + nombre_fichero, "w")
+    ficheiro.write(conexion.read())
     conexion.close()
-    temporal.close()
+    ficheiro.close()
     return nombre_fichero
 
 
@@ -190,16 +194,6 @@ class Partida(object):
             self.opener = logea(self.usuario, self.contrasena)
         return self.opener.open(direccion, None, HTTP_TIMEOUT).read()
 
-    def imagen(self, url):
-        """
-        Devuelve un fichero con una imagen
-
-        @param url: Url de la imagen
-        """
-        if url not in self._imagenes:
-            self._imagenes[url] = descarga_imagen(url)
-        return self._imagenes[url]
-
 
 class EscenaPruebas(Escena):
     """
@@ -283,10 +277,3 @@ class PartidaPruebas(Partida):
                         u'reales de la web, que lleva un rato'
         self.notas = u'Larararararra'
 
-    def imagen(self, url):
-        """
-        Devuelve siempre la misma imagen
-
-        @param url: Lo ignora
-        """
-        return "UmbriaDescargar/media/alyan_logo.png"
