@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file '/home/javier/Dropbox/Programas/spikes/DescargarUmbria/trunk/UmbriaDescargar/media/Descargar.ui'
 #
-# Created: Thu Dec 26 21:10:26 2013
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Fri Oct 31 20:12:42 2014
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -111,6 +111,6 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", "Código Partida", None))
         self.pushConectar.setText(_translate("MainWindow", "Conectar a la partida", None))
         self.labelTituloPartida.setText(_translate("MainWindow", "Ninguna partida conectada", None))
-        self.btnPdf.setText(_translate("MainWindow", "Genera PDF", None))
+        self.btnPdf.setText(_translate("MainWindow", "Genera Tex", None))
 
 import Descargar_rc

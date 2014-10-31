@@ -9,6 +9,7 @@ import socket
 import datetime
 import uuid
 import random
+import Image
 from bs4 import BeautifulSoup
 from PyQt4 import QtGui
 
@@ -54,11 +55,25 @@ def descarga_imagen(url_image, directorio):
         conexion = urllib.urlopen(url_image)
     except (IOError, AttributeError):
         return ""
-    nombre_fichero = str(uuid.uuid4()) + url_image[-4:]
+    extension = url_image.split(".")[-1]
+    if not extension:
+        extension = "jpg"
+    nombre_fichero = str(uuid.uuid4()) + "." + extension
     ficheiro = open(directorio + "/" + nombre_fichero, "w")
     ficheiro.write(conexion.read())
     conexion.close()
     ficheiro.close()
+    if extension == "gif":
+        try:
+            im = Image.open(str(directorio + "/" + nombre_fichero))
+        except IOError:
+            nombre_fichero = ''
+        else:
+            nueva_im = Image.new("RGBA", im.size)
+            nueva_im.paste(im)
+            nombre_fichero = nombre_fichero[:-3] + "png"
+            nueva_im.save(str(directorio + "/" + nombre_fichero), "PNG",
+                          quality=80)
     return nombre_fichero
 
 
@@ -75,6 +90,9 @@ class Post(object):
         self.avatar = html.find("img", class_="fotoAvatar")['src']
         self.texto = html.find("div", class_="texto")
         self.notas = html.find("div", class_="notas")
+        # Eliminar el titulo de las notas
+        if self.notas:
+            self.notas.find("h3").string = ''
 
 
 class Escena(object):

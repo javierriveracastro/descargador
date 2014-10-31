@@ -126,7 +126,7 @@
        <bool>false</bool>
       </property>
       <property name="text">
-       <string>Genera PDF</string>
+       <string>Genera Tex</string>
       </property>
      </widget>
     </item>
