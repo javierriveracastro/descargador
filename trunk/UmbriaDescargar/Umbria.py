@@ -56,19 +56,20 @@ def descarga_imagen(url_image, directorio):
     except (IOError, AttributeError):
         return ""
     extension = url_image.split(".")[-1]
-    if not extension:
+    if not extension or len(extension) > 4:
         extension = "jpg"
     nombre_fichero = str(uuid.uuid4()) + "." + extension
     ficheiro = open(directorio + "/" + nombre_fichero, "w")
     ficheiro.write(conexion.read())
     conexion.close()
     ficheiro.close()
-    if extension == "gif":
-        try:
-            im = Image.open(str(directorio + "/" + nombre_fichero))
-        except IOError:
-            nombre_fichero = ''
-        else:
+    try:
+        # Comprobamos que la imagen sea valida y entendible
+        im = Image.open(str(directorio + "/" + nombre_fichero))
+    except IOError:
+        nombre_fichero = ''
+    else:
+        if extension == "gif":
             nueva_im = Image.new("RGBA", im.size)
             nueva_im.paste(im)
             nombre_fichero = nombre_fichero[:-3] + "png"

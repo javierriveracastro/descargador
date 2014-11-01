@@ -3,8 +3,6 @@
 Pasa unha partida de Umbria a un ficheiro .tex
 """
 
-# TODO: Ficheiros graficos sen extension
-# TODO: Gifts, hay que convertilos a png.
 # TODO: Os saltos de lineas dentro das italicas e similares dan problemas
 # TODO: Subindices/texto pequeño
 # TODO: Tablas
@@ -92,6 +90,8 @@ class GeneradorText(object):
             el = el.replace(u'#', u'\\#')
             el = el.replace(u'[', u'$[$')
             el = el.replace(u']', u'$]$')
+            el = el.replace(u':\\', u'.: \\')
+            el = el.replace(u'´', u"'")
             return unicode(el)
         else:
             resul = u''
