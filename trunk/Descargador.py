@@ -52,16 +52,16 @@ class Principal(QtGui.QMainWindow, object):
             except IOError:
                 # noinspection PyCallByClass,PyArgumentList,PyTypeChecker
                 QtGui.QMessageBox.critical(
-                    self, "Error al cargar la partida",
-                    "No se ha podido contactar con Umbria")
+                    self, self.windowTitle(),
+                    "Error: No se ha podido contactar con Umbria")
                 self.partida = None
                 return
             except AttributeError:
                 # noinspection PyCallByClass,PyArgumentList,PyTypeChecker
                 QtGui.QMessageBox.critical(
-                    self, "Error al cargar la partida",
-                    u"No puedo entender la página, el código de la "
-                    u"partida o los datos de usuario y contraseña "
+                    self, self.windowTitle(),
+                    u"No puedo entender la respuesta de Umrbia, el código de "
+                    u"la partida o los datos de usuario y contraseña "
                     u"estan probablemente mal")
                 self.partida = None
                 return
