@@ -32,19 +32,39 @@ class Principal(QtGui.QMainWindow, object):
         QtGui.QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        # noinspection PyUnresolvedReferences
         self.ui.pushConectar.clicked.connect(self.cargar_partida)
+        # noinspection PyUnresolvedReferences
         self.ui.btnPdf.clicked.connect(self.genera_pdf)
         self.partida = None
         self.pruebas = pruebas
 
+    # noinspection PyArgumentList
     def cargar_partida(self):
         """
         Se conecta a Umbria y carga una partida.
         """
         if not self.pruebas:
-            self.partida = Partida(self.ui.editCodigoPartida.text(),
-                                   self.ui.editUsuario.text(),
-                                   self.ui.editContrasena.text())
+            try:
+                self.partida = Partida(self.ui.editCodigoPartida.text(),
+                                       self.ui.editUsuario.text(),
+                                       self.ui.editContrasena.text())
+            except IOError:
+                # noinspection PyCallByClass,PyArgumentList,PyTypeChecker
+                QtGui.QMessageBox.critical(
+                    self, "Error al cargar la partida",
+                    "No se ha podido contactar con Umbria")
+                self.partida = None
+                return
+            except AttributeError:
+                # noinspection PyCallByClass,PyArgumentList,PyTypeChecker
+                QtGui.QMessageBox.critical(
+                    self, "Error al cargar la partida",
+                    u"No puedo entender la página, el código de la "
+                    u"partida o los datos de usuario y contraseña "
+                    u"estan probablemente mal")
+                self.partida = None
+                return
         else:
             self.partida = PartidaPruebas("", "", "")
         self.ui.labelTituloPartida.setText(self.partida.titulo)
