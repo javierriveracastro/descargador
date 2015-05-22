@@ -59,7 +59,7 @@ def descarga_imagen(url_image, directorio):
     if not extension or len(extension) > 4:
         extension = "jpg"
     nombre_fichero = str(uuid.uuid4()) + "." + extension
-    ficheiro = open(directorio + "/" + nombre_fichero, "w")
+    ficheiro = open(directorio + "/" + nombre_fichero, "wb")
     ficheiro.write(conexion.read())
     conexion.close()
     ficheiro.close()
